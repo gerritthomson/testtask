@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Database\Entities\MailChimp;
 
 use Doctrine\ORM\Mapping as ORM;
+
 use EoneoPay\Utils\Str;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity()
@@ -42,7 +44,7 @@ class MailChimpList extends MailChimpEntity
     private $listId;
 
     /**
-     * @ORM\Column(name="mail_chimp_id", type="string", nullable=true)
+     * @ORM\Column(name="mailchimp_id", type="string", nullable=true)
      *
      * @var string
      */
@@ -89,6 +91,16 @@ class MailChimpList extends MailChimpEntity
      * @var string
      */
     private $visibility;
+
+    /**
+     * One MailChimpList has many MailChimpMembers
+     * @ORM\OneToMany(targetEntity="MailChimpMember", mappedBy="list")
+     */
+    private $members;
+
+    public function addMember(MailChimpMember $member){
+        $this->members->add($member);
+    }
 
     /**
      * Get id.
@@ -139,7 +151,8 @@ class MailChimpList extends MailChimpEntity
             'mailchimp_id' => 'nullable|string',
             'permission_reminder' => 'required|string',
             'use_archive_bar' => 'nullable|boolean',
-            'visibility' => 'nullable|string|in:pub,prv'
+            'visibility' => 'nullable|string|in:pub,prv',
+            'members' => 'nullable'
         ];
     }
 
@@ -298,5 +311,11 @@ class MailChimpList extends MailChimpEntity
         }
 
         return $array;
+    }
+
+    public function __construct(?array $data = null)
+    {
+        parent::__construct($data);
+        $this->members = new ArrayCollection();
     }
 }

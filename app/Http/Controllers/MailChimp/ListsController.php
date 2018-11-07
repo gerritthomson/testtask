@@ -122,6 +122,30 @@ class ListsController extends Controller
     }
 
     /**
+     * Retrieve all return MailChimp lists.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showAll(): JsonResponse
+    {
+        /** @var \App\Database\Entities\MailChimp\MailChimpList|null $list */
+        $lists = $this->entityManager->getRepository(MailChimpList::class)->findAll();
+
+//        if ($list === null) {
+//            return $this->errorResponse(
+//                ['message' => \sprintf('MailChimpList[%s] not found', $listId)],
+//                404
+//            );
+//        }
+
+        $r_data = [];
+        foreach($lists as $list){
+            $r_data[] = $list->toArray();
+        }
+        return $this->successfulResponse($r_data);
+    }
+
+    /**
      * Update MailChimp list.
      *
      * @param \Illuminate\Http\Request $request
